@@ -84,7 +84,7 @@ fn main() {
     
     let channel = link_feed.build_rss();
     
-    let mut file = File::create(rss_file_name).unwrap();
+    let file = File::create(rss_file_name).unwrap();
     channel.write_to(file).unwrap(); // write to the channel to a writer
     
     let string = channel.to_string();
