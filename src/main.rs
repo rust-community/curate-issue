@@ -1,44 +1,17 @@
-extern crate reqwest;
 extern crate rss;
-
-mod autolink;
-
 #[macro_use]
 extern crate serde_derive;
+extern crate reqwest;
+
+mod autolink;
+mod github;
+
+use github::{GithubIssue};
+
 
 use rss::{Channel, ChannelBuilder, Item, ItemBuilder};
 
 const ISSUE_URL:&'static str = "https://api.github.com/repos/rust-community/content-o-tron/issues/6";
-
-#[derive(Deserialize)]
-struct GithubComment {
-    body: String
-}
-
-#[derive(Deserialize)]
-struct GithubIssue {
-    comments_url: String,
-    title: String,
-    body: String,
-    
-    #[serde(skip)]
-    comments: Option<Vec<GithubComment>>
-}
-
-impl GithubIssue {
-    fn get(url: &str) -> Result<GithubIssue, reqwest::Error> {
-        let mut res = reqwest::get(url)?;
-        let issue: GithubIssue = res.json()?;
-        Ok(issue)
-    }
-    
-    fn get_comments(mut self : GithubIssue) -> Result<GithubIssue, reqwest::Error> {
-        // TODO: support pagination
-        let mut res = reqwest::get(&self.comments_url)?;
-        self.comments = res.json()?;
-        Ok(self)
-    }
-}
 
 struct LinkFeed<'a> {
     links: &'a Vec<String>
