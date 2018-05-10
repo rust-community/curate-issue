@@ -2,30 +2,41 @@ extern crate rss;
 #[macro_use]
 extern crate serde_derive;
 extern crate reqwest;
+extern crate scraper;
 
 mod autolink;
 mod github;
+mod linkinfo;
 
 use github::{GithubIssue};
 
+use linkinfo::{LinkInfo};
 
 use rss::{Channel, ChannelBuilder, Item, ItemBuilder};
 
 const ISSUE_URL:&'static str = "https://api.github.com/repos/rust-community/content-o-tron/issues/6";
 
-struct LinkFeed<'a> {
-    links: &'a Vec<String>
+struct LinkFeed {
+    links: Vec<LinkInfo>
 }
 
-impl <'a> LinkFeed<'a> {
+impl LinkFeed {
     fn new(links : &Vec<String>) -> LinkFeed {
-        LinkFeed { links: links }
+        LinkFeed { links: links.iter().map(|link| LinkInfo::from_url(link)).collect() }
     }
     
-    fn build_item(&self, link: &str) -> Item {
+    fn build_item(&self, link: &LinkInfo) -> Item {
+        
+        // Use the link as title if it cannot be scraped
+        
+        let title = match &link.title { 
+            &Some(ref title) => title.to_string(),
+            _ => link.url.to_string()
+        };
+        
         ItemBuilder::default()
-            .title(link.to_string())
-            .link(link.to_string())
+            .title(title)
+            .link(link.url.to_string())
             .build()
             .unwrap()
     }
