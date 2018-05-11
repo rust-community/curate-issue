@@ -6,6 +6,7 @@ authors = ["Matthias Bartelmeß <mba@fourplusone.de>"]
 [dependencies]
 pulldown-cmark = { version = "0.0.11", default-features = false }
 
+hyper = "0.11"
 reqwest = "0.8.*"
 
 serde = "1.0"

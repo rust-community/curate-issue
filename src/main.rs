@@ -3,6 +3,8 @@ extern crate rss;
 extern crate serde_derive;
 extern crate reqwest;
 extern crate scraper;
+extern crate hyper;
+
 
 mod autolink;
 mod github;
