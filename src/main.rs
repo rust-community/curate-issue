@@ -12,7 +12,7 @@ mod linkinfo;
 
 use github::{GithubIssue};
 use linkinfo::{LinkInfo};
-use rss::{Channel, ChannelBuilder, Item, ItemBuilder};
+use rss::{Channel, ChannelBuilder, Item, ItemBuilder, Guid};
 use std::env;
 use std::fs::File;
 
@@ -38,9 +38,14 @@ impl LinkFeed {
             _ => link.url.to_string()
         };
         
+        let mut guid = Guid::default();
+        guid.set_value(link.resolved_url.as_str());
+        guid.set_permalink(true);
+        
         ItemBuilder::default()
             .title(title)
             .link(link.url.to_string())
+            .guid(guid)
             .build()
             .unwrap()
     }

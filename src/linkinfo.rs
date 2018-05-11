@@ -3,18 +3,11 @@ use scraper::{Html, Selector};
 
 pub struct LinkInfo {
     pub url: String,
+    pub resolved_url:String,
     pub title: Option<String>,
     //TODO: use a proper data datatype
     pub publication_date: Option<String>
 }
-
-fn fetch_html(url: &str) -> Result<Html, reqwest::Error> {
-    let mut res = reqwest::get(url)?;
-    let document = Html::parse_document(&res.text()?);
-    
-    Ok(document)
-}
-
 
 fn get_twitter_title(document: &Html) -> Option<String> {
     
@@ -67,8 +60,10 @@ fn get_html_title(document: &Html) -> Option<String> {
 impl LinkInfo {
     
     pub fn from_url(url: &str) -> LinkInfo {
-        let document = fetch_html(url).unwrap();
+        let mut res = reqwest::get(url).unwrap();
         
+        let document = Html::parse_document(&res.text().unwrap());
+                
         let mut title;
         
         title = get_twitter_title(&document);
@@ -81,7 +76,7 @@ impl LinkInfo {
             title = get_html_title(&document);
         }
         
-        LinkInfo {url: url.to_string(), title:title, publication_date:None}
+        LinkInfo {url: url.to_string(), resolved_url: res.url().to_string(), title:title, publication_date:None}
     }
 }
 
