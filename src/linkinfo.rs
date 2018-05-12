@@ -45,17 +45,9 @@ fn get_og_title(document: &Html) -> Option<String> {
 fn get_html_title(document: &Html) -> Option<String> {
     
     let selector = Selector::parse("title").unwrap();
-    
-    for element in document.select(&selector) {
-        
-        let title = match element.text().next() {
-            Some(txt) => Some(txt.to_string()),
-            _ => None
-        };
-        return title;
-    }
-    
-    None
+    document.select(&selector).next()
+        .and_then(|element| element.text().next())
+        .and_then(|text| Some(text.to_string()))
 }
 
 impl LinkInfo {
@@ -77,7 +69,7 @@ impl LinkInfo {
             title = get_html_title(&document);
         }
         
-        LinkInfo {url: url.to_string(), resolved_url: res.url().to_string(), title:title, publication_date:None}
+        LinkInfo {url: url.to_string(), resolved_url: res.url().to_string(), title, publication_date:None}
     }
 }
 

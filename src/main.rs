@@ -20,13 +20,13 @@ use std::path::Path;
 use std::io::BufReader;
 
 
-const BASE_ISSUE_URL:&'static str = "https://api.github.com/repos";
+const BASE_ISSUE_URL:&str = "https://api.github.com/repos";
 
 struct LinkFeed {
     links: Vec<LinkInfo>
 }
 
-fn deduplicate_links(links: &Vec<LinkInfo>) -> Vec<LinkInfo> {
+fn deduplicate_links(links: &[LinkInfo]) -> Vec<LinkInfo> {
     // TODO: use unique_by from itertools
     let mut seen_urls:Vec<String> = vec![];
 
@@ -62,7 +62,7 @@ fn test_deduplicate_links (){
 
 
 impl LinkFeed {
-    fn new(urls : &Vec<String>) -> LinkFeed {
+    fn new(urls : &[String]) -> LinkFeed {
         let links : Vec<LinkInfo>  = urls.iter()
             .map(|url| LinkInfo::from_url(url))
             .collect();
@@ -74,8 +74,8 @@ impl LinkFeed {
         
         // Use the link as title if it cannot be scraped
         
-        let title = match &link.title { 
-            &Some(ref title) => title.to_string(),
+        let title = match link.title { 
+            Some(ref title) => title.to_string(),
             _ => link.url.to_string()
         };
         
@@ -100,7 +100,7 @@ impl LinkFeed {
             .filter(|link| !items.iter().any(|item| item.link() == Some(&link.url)))
             .map(|link| self.build_item(link));
 
-        let mut combined_items:Vec<Item> = items.iter().map(|item| item.clone()).collect();
+        let mut combined_items:Vec<Item> = items.to_vec();
         combined_items.extend(new_items);
 
         combined_items
@@ -138,15 +138,13 @@ fn main() {
     let rss_file_name = &args[2];
     
     let rss_file_path = Path::new(rss_file_name);
-
-    let channel:Option<Channel>;
-
-    if rss_file_path.exists() {
+    
+    let channel = if rss_file_path.exists() {
         let f = File::open(rss_file_name).expect("Cannot open file");
-        channel = Some(Channel::read_from(BufReader::new(f)).unwrap());
+        Some(Channel::read_from(BufReader::new(f)).unwrap())
     } else {
-        channel = None;
-    }
+        None
+    };
 
     let issue_url = format!("{}/{}", BASE_ISSUE_URL, url_fragment);
     

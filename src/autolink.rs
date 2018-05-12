@@ -6,7 +6,7 @@ use self::pulldown_cmark::{Parser, Event, Tag};
 use self::regex::Regex;
 
 pub fn autolink(text: &str) -> Vec<String> {
-    if text.len() == 0 {
+    if text.is_empty() {
         return vec![]
     }
 
