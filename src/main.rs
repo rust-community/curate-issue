@@ -108,18 +108,14 @@ impl LinkFeed {
         
     }
     
-    fn build_rss(&self, channel:Option<Channel>) -> Channel {
+    fn build_rss(&self, channel:Option<Channel>, builder:&mut ChannelBuilder) -> Channel {
         match channel {
             Some(mut channel) => {
                 let items = self.update_items(channel.items());
                 channel.set_items(items); 
                 channel
             }
-            None => ChannelBuilder::default()
-                .title("Channel Title")
-                .link("http://example.com")
-                .description("An RSS feed.")
-                .items(self.build_items())
+            None => builder.items(self.build_items())
                 .build()
                 .unwrap()
         }
@@ -162,8 +158,13 @@ fn main() {
     links.append(&mut comment_links);
     
     let link_feed = LinkFeed::new(&links);
+
+    let mut builder = ChannelBuilder::default()
+        .title(issue.title)
+        .description(issue.body).to_owned();
+
+    let channel = link_feed.build_rss(channel, &mut builder);
     
-    let channel = link_feed.build_rss(channel);
     if let Some(file_name) = rss_file_name {
         let file = File::create(file_name).unwrap();
         channel.write_to(file).unwrap(); // write to the channel to a writer
