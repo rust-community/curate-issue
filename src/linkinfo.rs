@@ -1,6 +1,7 @@
 use reqwest;
 use scraper::{Html, Selector};
 
+#[derive(Clone,Debug)]
 pub struct LinkInfo {
     pub url: String,
     pub resolved_url:String,
