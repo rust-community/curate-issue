@@ -86,6 +86,7 @@ impl LinkFeed {
         ItemBuilder::default()
             .title(title)
             .link(link.url.to_string())
+            .pub_date(link.publication_date.and_then(|d| Some(d.to_rfc2822())))
             .guid(guid)
             .build()
             .unwrap()
