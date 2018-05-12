@@ -130,22 +130,26 @@ fn main() {
     
     let args: Vec<String> = env::args().collect();
     
-    if args.len() < 3 {
-        println!("Usage {} <github_user/repo/issues/issue_id> <rss file>", &args[0]);
+    if args.len() < 2 {
+        println!("Usage {} <github_user/repo/issues/issue_id> [rss file]", &args[0]);
         return;
     }
     
     let url_fragment = &args[1];
-    let rss_file_name = &args[2];
-    
-    let rss_file_path = Path::new(rss_file_name);
-    
-    let channel = if rss_file_path.exists() {
-        let f = File::open(rss_file_name).expect("Cannot open file");
-        Some(Channel::read_from(BufReader::new(f)).unwrap())
+
+    let rss_file_name = if args.len() > 2 { Some(&args[2]) } else { None };
+
+    let channel = if let Some(file_name) = rss_file_name {
+        let rss_file_path = Path::new(file_name);
+        if rss_file_path.exists() {
+            let f = File::open(file_name).expect("Cannot open file");
+            Some(Channel::read_from(BufReader::new(f)).unwrap())
+        } else {
+            None
+        }
     } else {
-        None
-    };
+            None
+        };
 
     let issue_url = format!("{}/{}", BASE_ISSUE_URL, url_fragment);
     
@@ -160,10 +164,11 @@ fn main() {
     let link_feed = LinkFeed::new(&links);
     
     let channel = link_feed.build_rss(channel);
-    
-    let file = File::create(rss_file_name).unwrap();
-    channel.write_to(file).unwrap(); // write to the channel to a writer
-    
+    if let Some(file_name) = rss_file_name {
+        let file = File::create(file_name).unwrap();
+        channel.write_to(file).unwrap(); // write to the channel to a writer
+    }
+
     let string = channel.to_string();
     println!("{}", string)
 }
