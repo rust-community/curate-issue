@@ -1,3 +1,5 @@
+//! A very simple GitHub API module 
+
 use reqwest;
 use hyper::header::{Link, RelationType};
 
@@ -5,6 +7,9 @@ use hyper::header::{Link, RelationType};
 pub struct GithubComment {
     pub body: String,
 }
+
+
+
 
 #[derive(Deserialize)]
 pub struct GithubIssue {

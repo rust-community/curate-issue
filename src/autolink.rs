@@ -1,10 +1,11 @@
-
 extern crate pulldown_cmark;
 extern crate regex;
 
 use self::pulldown_cmark::{Parser, Event, Tag};
 use self::regex::Regex;
 
+/// Finds everything what looks like an URL inside a string. Inspired by 
+/// [https://github.com/tenderlove/rails_autolink/blob/master/lib/rails_autolink/helpers.rb](https://github.com/tenderlove/rails_autolink/blob/master/lib/rails_autolink/helpers.rb)
 pub fn autolink(text: &str) -> Vec<String> {
     if text.is_empty() {
         return vec![];
