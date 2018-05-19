@@ -28,7 +28,7 @@ impl GithubIssue {
         Ok(issue)
     }
 
-    pub fn get_comments(mut self: GithubIssue) -> Result<GithubIssue, reqwest::Error> {
+    pub fn load_comments(&mut self) -> Result<&mut GithubIssue, reqwest::Error> {
         let mut next_page = Some(self.comments_url.to_string());
         let mut comments: Vec<GithubComment> = vec![];
 
@@ -57,10 +57,10 @@ impl GithubIssue {
 
 #[test]
 fn pagination() {
-    let issue = GithubIssue::get(
+    let mut issue = GithubIssue::get(
         "https://api.github.com/repos/fourplusone/curate-issue/issues/1",
-    ).unwrap()
-        .get_comments()
-        .unwrap();
+    ).unwrap();
+    issue.load_comments().unwrap();
+    
     assert!(issue.comments.unwrap().len() > 30)
 }
