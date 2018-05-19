@@ -60,7 +60,7 @@ pub fn cli() {
     };
 
     let issue_url = format!("{}/{}", BASE_ISSUE_URL, url_fragment);
-    let mut issue = GithubIssue::get(&issue_url).unwrap();
+    let mut issue = GithubIssue::get(&issue_url).expect("Error fetching Github Issue");
     
     let links = extract_links_from_issue(&mut issue).unwrap();
     
