@@ -90,10 +90,7 @@ impl LinkFeed {
     }
 
     fn build_items(&self) -> Vec<Item> {
-        self.links
-            .iter()
-            .map(|link| self.build_item(link))
-            .collect()
+        self.update_items(&[])
     }
     
     /// Adds new items to an existing collection of items
