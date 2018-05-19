@@ -89,10 +89,10 @@ fn get_url_date(url: &str) -> Option<DateTime<Utc>> {
 }
 
 impl LinkInfo {
-    pub fn from_url(url: &str) -> LinkInfo {
-        let mut res = reqwest::get(url).unwrap();
+    pub fn from_url(url: &str) -> Result<LinkInfo, reqwest::Error> {
+        let mut res = reqwest::get(url)?;
 
-        let document = Html::parse_document(&res.text().unwrap());
+        let document = Html::parse_document(&res.text()?);
 
         let mut title;
 
@@ -112,18 +112,18 @@ impl LinkInfo {
             publication_date = get_url_date(&res.url().to_string());
         }
 
-        LinkInfo {
+        Ok(LinkInfo {
             url: url.to_string(),
             resolved_url: res.url().to_string(),
             title,
             publication_date,
-        }
+        })
     }
 }
 
 #[cfg(test)]
 fn test_title(url: &str, expected: &str) {
-    let link_info = LinkInfo::from_url(url);
+    let link_info = LinkInfo::from_url(url).unwrap();
     assert_eq!(link_info.url, url);
     assert_eq!(link_info.title, Some(expected.to_string()));
 }

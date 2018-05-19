@@ -61,7 +61,11 @@ fn test_deduplicate_links() {
 /// A LinkFeed builds an RSS feed from a collection of URLs
 impl LinkFeed {
     pub fn new(urls: &[String]) -> LinkFeed {
-        let links: Vec<LinkInfo> = urls.iter().map(|url| LinkInfo::from_url(url)).collect();
+        let links: Vec<LinkInfo> = urls
+            .iter()
+            .map(|url| LinkInfo::from_url(url))
+            .filter_map(|link_info| link_info.ok())
+            .collect();
 
         LinkFeed { links: deduplicate_links(&links) }
     }
@@ -108,7 +112,7 @@ impl LinkFeed {
         combined_items
 
     }
-
+    
     /// Creates a Feed bases on either a Channel or a ChannelBuilder
     pub fn build_rss(&self, channel: Option<Channel>, builder: &mut ChannelBuilder) -> Channel {
         match channel {
@@ -120,4 +124,16 @@ impl LinkFeed {
             None => builder.items(self.build_items()).build().unwrap(),
         }
     }
+}
+
+#[test]
+fn test_invalid_url() {
+    let invalid_urls = ["https://1.2.3.4.5/".to_string()];
+    assert!(LinkFeed::new(&invalid_urls).links.is_empty());
+}
+
+#[test]
+fn test_valid_url() {
+    let valid_urls = ["https://example.org/".to_string()];
+    assert!(LinkFeed::new(&valid_urls).links.len() == 1);
 }
