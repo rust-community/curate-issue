@@ -33,6 +33,7 @@ use std::io::BufReader;
 
 const BASE_ISSUE_URL: &str = "https://api.github.com/repos";
 
+/// Loads an issue and all its comments from Github, extracts all links, using the autolink module.
 fn extract_links_from_issue(issue: &mut GithubIssue) -> Option<Vec<String>>{
     issue.load_comments().unwrap();
     let comments = &issue.comments;
