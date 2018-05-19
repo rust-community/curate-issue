@@ -58,13 +58,15 @@ fn test_deduplicate_links() {
 
 }
 
+/// A LinkFeed builds an RSS feed from a collection of URLs
 impl LinkFeed {
     pub fn new(urls: &[String]) -> LinkFeed {
         let links: Vec<LinkInfo> = urls.iter().map(|url| LinkInfo::from_url(url)).collect();
 
         LinkFeed { links: deduplicate_links(&links) }
     }
-
+    
+    /// Creates an RSS Feed item from a link
     fn build_item(&self, link: &LinkInfo) -> Item {
 
         // Use the link as title if it cannot be scraped
@@ -93,7 +95,8 @@ impl LinkFeed {
             .map(|link| self.build_item(link))
             .collect()
     }
-
+    
+    /// Adds new items to an existing collection of items
     fn update_items(&self, items: &[Item]) -> Vec<Item> {
         let new_items = self.links
             .iter()
@@ -109,6 +112,7 @@ impl LinkFeed {
 
     }
 
+    /// Creates a Feed bases on either a Channel or a ChannelBuilder
     pub fn build_rss(&self, channel: Option<Channel>, builder: &mut ChannelBuilder) -> Channel {
         match channel {
             Some(mut channel) => {
