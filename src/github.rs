@@ -58,7 +58,7 @@ impl GithubIssue {
 #[test]
 fn pagination() {
     let mut issue = GithubIssue::get(
-        "https://api.github.com/repos/fourplusone/curate-issue/issues/1",
+        "https://api.github.com/repos/rust-community/curate-issue/issues/1",
     ).unwrap();
     issue.load_comments().unwrap();
     
