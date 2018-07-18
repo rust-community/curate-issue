@@ -1,6 +1,6 @@
 # Curate Issue
 
-[![Build Status](https://travis-ci.com/fourplusone/curate-issue.svg?branch=master)](https://travis-ci.com/fourplusone/curate-issue)
+[![Build Status](https://travis-ci.com/rust-community/curate-issue.svg?branch=master)](https://travis-ci.com/rust-community/curate-issue)
 
 ## Running the tool
 `cargo run path/to/issue path/to/xml_file`
